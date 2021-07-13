@@ -2,10 +2,14 @@ import { Controller, Get, UseGuards, HttpStatus, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { Request } from 'express';
+import { PageService } from './page.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly pageService: PageService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -21,6 +25,7 @@ export class AppController {
   @Get('/facebook/redirect')
   @UseGuards(AuthGuard('facebook'))
   async facebookLoginRedirect(@Req() req: Request): Promise<any> {
+    this.pageService.getPage(req.user);
     return {
       statusCode: HttpStatus.OK,
       data: req.user,
